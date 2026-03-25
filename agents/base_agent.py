@@ -10,6 +10,7 @@ Handles:
 """
 
 import json
+import time
 import socket
 import threading
 import logging
@@ -105,6 +106,7 @@ class BaseAgent(ABC):
         """
         if self._enc_manager is None:
             raise RuntimeError("Agent not connected — call connect() first")
+        start = time.time()
         raw = build_envelope(
             msg_type=msg_type,
             sender_id=self.agent_id,
@@ -113,6 +115,8 @@ class BaseAgent(ABC):
             sig_manager=self._sig_manager,
         )
         _send(self._conn, raw)
+        end = time.time()
+        print(f"⏱️ Latency: {end - start:.6f} seconds")
 
     # ── Receive loop ──────────────────────────────────────────────────────────
 

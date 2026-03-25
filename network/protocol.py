@@ -74,9 +74,11 @@ def build_envelope(
     raw_payload: bytes = json.dumps(plaintext_payload, sort_keys=True).encode()
 
     # 2. Sign the raw plaintext
+    print("✍️ Signing message...")
     signature: bytes = sig_manager.sign(raw_payload)
 
     # 3. Encrypt the payload
+    print("🔒 Encrypting message...")
     ciphertext: bytes = enc_manager.encrypt(raw_payload)
 
     # 4. Pack everything into an envelope
@@ -138,12 +140,14 @@ def open_envelope(
     # Decrypt
     from crypto.encryption import EncryptionError
     try:
+        print("🔓 Decrypting message...")
         plaintext = enc_manager.decrypt(ciphertext)
     except EncryptionError as exc:
         raise ProtocolError(f"Decryption failed: {exc}") from exc
 
     # Verify signature over the decrypted plaintext
     try:
+        print("✔️ Verifying signature...")
         SignatureManager.verify(sender_pub_key_pem, plaintext, signature)
     except SignatureError as exc:
         raise ProtocolError(f"Signature invalid for sender '{envelope.sender_id}': {exc}") from exc
